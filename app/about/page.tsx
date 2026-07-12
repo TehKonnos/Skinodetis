@@ -75,13 +75,6 @@ export default async function AboutPage() {
             του, με χριστουγεννιάτικες ιστορίες γεμάτες μουσική, χιούμορ και
             μαγεία — έτοιμες να ανέβουν στη δική σας σκηνή.
           </p>
-
-          {/*
-            ΣΗΜΕΙΩΣΗ: Δεν βρέθηκε δημόσιο βιογραφικό του Παναγιώτη Χρυσίδη στο
-            διαδίκτυο. Τα παραπάνω βασίζονται στα ίδια τα έργα. Συμπληρώστε εδώ
-            πραγματικά στοιχεία (καταγωγή, σπουδές, εμπειρία, διακρίσεις,
-            στοιχεία επικοινωνίας) όταν τα έχετε.
-          */}
         </article>
 
         {/* Υπογραφή συγγραφέα */}
@@ -94,7 +87,8 @@ export default async function AboutPage() {
             priority
             className="w-52 h-auto opacity-90 dark:invert"
           />
-          <span className="mt-1 mr-2 text-sm text-gray-400 dark:text-gray-500">
+          {/* Το όνομα του συγγραφέα, για SEO */}
+          <span className=" hidden mt-1 mr-2 text-sm text-gray-400 dark:text-gray-500">
             Παναγιώτης Χρυσίδης
           </span>
         </div>

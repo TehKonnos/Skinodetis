@@ -409,7 +409,7 @@ export default function PlaysEditor({
               {/* Πεδία από το σχήμα */}
               <div className="rounded-2xl bg-white dark:bg-gray-900 ring-1 ring-black/5 dark:ring-white/10 p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                 {playSchema.map((f) => {
-                  const value = (draft as Record<string, unknown>)[f.key];
+                  const value = draft[f.key];
                   const listId = suggestions[f.key as string]?.length
                     ? `dl-${String(f.key)}`
                     : undefined;

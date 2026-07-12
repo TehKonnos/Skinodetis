@@ -96,12 +96,12 @@ export function emptyPlay(): Play {
   for (const f of playSchema) {
     p[f.key] = f.type === 'number' ? 0 : f.type === 'tags' ? [] : '';
   }
-  return p as Play;
+  return p as unknown as Play;
 }
 
 /** Καθαρίζει/τυποποιεί ένα raw αντικείμενο σε έγκυρο Play, βάσει σχήματος. */
 export function coercePlay(raw: Record<string, unknown>): Play {
-  const out = emptyPlay() as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
   for (const f of playSchema) {
     const v = raw[f.key];
     if (f.type === 'number') {
@@ -114,7 +114,7 @@ export function coercePlay(raw: Record<string, unknown>): Play {
       out[f.key] = v == null ? '' : String(v);
     }
   }
-  return out as Play;
+  return out as unknown as Play;
 }
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -123,7 +123,7 @@ const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function validatePlay(play: Play): string[] {
   const errors: string[] = [];
   for (const f of playSchema) {
-    const v = (play as Record<string, unknown>)[f.key];
+    const v = play[f.key];
     if (!f.required) continue;
     if (f.type === 'tags') {
       if (!Array.isArray(v) || v.length === 0)

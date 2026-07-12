@@ -23,7 +23,7 @@ export default async function AdminPlaysPage() {
     if (f.type !== 'tags' && f.type !== 'text') continue;
     const vals = new Set<string>();
     for (const p of plays) {
-      const v = (p as Record<string, unknown>)[f.key];
+      const v = p[f.key];
       if (Array.isArray(v)) v.forEach((x) => x && vals.add(String(x)));
       else if (v) vals.add(String(v));
     }

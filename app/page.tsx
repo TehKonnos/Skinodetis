@@ -1,65 +1,192 @@
-import Image from "next/image";
+import Hero from './components/Hero';
+import PlayCard from './components/PlayCard';
+import ContactForm from './components/ContactForm';
+import NewsletterForm from './components/NewsletterForm';
+import {
+  filterPlays,
+  getAllCategories,
+  taxonomy,
+  type PlayFilters,
+} from './data/plays';
+import { readPlays } from './lib/plays-store';
+import Link from 'next/link';
 
-export default function Home() {
+// Τα έργα είναι επεξεργάσιμα κατά το runtime — να μη γίνεται static caching.
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<PlayFilters>;
+}) {
+  const params = await searchParams;
+
+  const filters: PlayFilters = {
+    category: params.category,
+    season: params.season,
+    grade: params.grade,
+    age: params.age,
+    audience: params.audience,
+  };
+
+  const plays = await readPlays();
+  const filteredPlays = filterPlays(plays, filters);
+  const allCategories = getAllCategories(plays);
+
+  // Ενεργά φίλτρα προς εμφάνιση στην επικεφαλίδα
+  const activeFilters = taxonomy
+    .map((dim) => ({ dim, value: filters[dim.param] }))
+    .filter((f): f is { dim: (typeof taxonomy)[number]; value: string } =>
+      Boolean(f.value)
+    );
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <Hero />
+
+      <main id="plays" className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Section heading */}
+        <div className="text-center mb-10">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">
+            {activeFilters.length > 0 ? (
+              <span className="text-coral-600 dark:text-coral">
+                {activeFilters.map((f) => f.value).join(' · ')}
+              </span>
+            ) : (
+              'Τα Έργα μας'
+            )}
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 text-base">
+            {activeFilters.length > 0
+              ? `Εμφάνιση ${filteredPlays.length} έργ${filteredPlays.length !== 1 ? 'ων' : 'ου'}`
+              : 'Ξεχωριστές ιστορίες για να ενθουσιάσουν το νεαρό κοινό'}
           </p>
+
+          {/* Ενεργά φίλτρα */}
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
+              {activeFilters.map((f) => (
+                <span
+                  key={f.dim.param}
+                  className="inline-flex items-center gap-1.5 bg-coral/10 dark:bg-coral/20 text-coral-600 dark:text-coral text-sm font-medium px-3 py-1 rounded-full"
+                >
+                  <span className="opacity-60">{f.dim.label}:</span> {f.value}
+                </span>
+              ))}
+              <Link
+                href="/#plays"
+                className="inline-flex items-center text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-coral-600 dark:hover:text-coral px-2"
+              >
+                Καθαρισμός ✕
+              </Link>
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Φίλτρο ανά είδος */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10">
+          <Link
+            href="/#plays"
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+              activeFilters.length === 0
+                ? 'bg-coral text-white shadow-md shadow-coral/30'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Όλα
+          </Link>
+          {allCategories.map((cat) => (
+            <Link
+              key={cat}
+              href={`/?category=${encodeURIComponent(cat)}#plays`}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                filters.category === cat
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md shadow-purple-200 dark:shadow-purple-900/30'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {cat}
+            </Link>
+          ))}
         </div>
+
+        {/* Grid */}
+        {filteredPlays.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-8 h-8 text-gold-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">
+              Δεν βρέθηκαν έργα για αυτή την κατηγορία.
+            </p>
+            <Link
+              href="/"
+              className="text-coral-600 dark:text-coral font-semibold hover:underline"
+            >
+              Δείτε όλα τα έργα →
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {filteredPlays.map((play) => (
+              <PlayCard key={play.id} play={play} />
+            ))}
+          </div>
+        )}
       </main>
-    </div>
+
+      {/* Επικοινωνία */}
+      <section
+        id="contact"
+        className="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40"
+      >
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">
+              Επικοινωνία
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 text-base">
+              Θέλετε να ανεβάσετε ένα έργο ή έχετε μια ερώτηση; Γράψτε μας.
+            </p>
+          </div>
+          <ContactForm />
+        </div>
+      </section>
+
+      {/* Footer με newsletter */}
+      <footer className="mt-auto border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="max-w-sm">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                Newsletter
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Μείνετε ενημερωμένοι για νέα έργα και παραστάσεις.
+              </p>
+            </div>
+            <NewsletterForm />
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-400 dark:text-gray-600">
+            <p>
+              &copy; {new Date().getFullYear()}{' '}Σκηνοδέτης &mdash; Παιδικά Θεατρικά Έργα
+            </p>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }

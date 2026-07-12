@@ -2,7 +2,7 @@
 
 import { appendFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { sendContactEmail } from './lib/mailer';
+import { sendContactEmail, sendNewsletterEmail } from './lib/mailer';
 
 export interface FormState {
   ok: boolean;
@@ -64,22 +64,28 @@ export async function submitContact(
     };
   }
 
+  // Δύο κανάλια παράδοσης: αποθήκευση σε δίσκο (persistent server) ΚΑΙ email.
+  // Επιτυχία αν πετύχει έστω ένα — ώστε να δουλεύει και σε serverless (Vercel),
+  // όπου ο δίσκος είναι read-only αλλά το email φεύγει κανονικά.
+  let saved = false;
+  let emailed = false;
   try {
     await appendSubmission('contact.jsonl', { name, email, message });
+    saved = true;
   } catch (err) {
     console.error('[ΕΠΙΚΟΙΝΩΝΙΑ] αποτυχία αποθήκευσης', err);
-    return {
-      ok: false,
-      message: 'Κάτι πήγε στραβά κατά την αποθήκευση. Δοκιμάστε ξανά.',
-    };
   }
-
-  // Ειδοποίηση με email (best-effort): το μήνυμα έχει ήδη αποθηκευτεί,
-  // οπότε αποτυχία αποστολής δεν μπλοκάρει τον χρήστη.
   try {
-    await sendContactEmail({ name, email, message });
+    emailed = await sendContactEmail({ name, email, message });
   } catch (err) {
     console.error('[ΕΠΙΚΟΙΝΩΝΙΑ] αποτυχία αποστολής email', err);
+  }
+
+  if (!saved && !emailed) {
+    return {
+      ok: false,
+      message: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά ή στείλτε μας email.',
+    };
   }
 
   return {
@@ -109,14 +115,22 @@ export async function subscribeNewsletter(
     return { ok: false, message: 'Παρακαλώ δώστε ένα έγκυρο email.' };
   }
 
+  let saved = false;
+  let emailed = false;
   try {
     await appendSubmission('newsletter.jsonl', { email });
+    saved = true;
   } catch (err) {
     console.error('[NEWSLETTER] αποτυχία αποθήκευσης', err);
-    return {
-      ok: false,
-      message: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.',
-    };
+  }
+  try {
+    emailed = await sendNewsletterEmail(email);
+  } catch (err) {
+    console.error('[NEWSLETTER] αποτυχία αποστολής email', err);
+  }
+
+  if (!saved && !emailed) {
+    return { ok: false, message: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.' };
   }
 
   return { ok: true, message: 'Εγγραφήκατε! Θα λαμβάνετε τα νέα μας.' };

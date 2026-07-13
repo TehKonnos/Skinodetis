@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import Search from './Search';
+import type { PlaySearchItem } from '../data/plays';
 
 export interface CategoryMenuGroup {
   param: string;
@@ -13,8 +15,10 @@ export interface CategoryMenuGroup {
 
 export default function Navbar({
   categoryMenu,
+  searchItems,
 }: {
   categoryMenu: CategoryMenuGroup[];
+  searchItems: PlaySearchItem[];
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -78,6 +82,9 @@ export default function Navbar({
 
         {/* Δεξιά πλευρά */}
         <nav className="flex items-center gap-5 sm:gap-7">
+          {/* Αναζήτηση */}
+          <Search items={searchItems} colorClass={linkColor} />
+
           {/* Dropdown Κατηγορίες */}
           <div
             className="relative"

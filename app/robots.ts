@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/admin', // η περιοχή διαχείρισης δεν χρειάζεται indexing
+      disallow: ['/admin', '/search'], // διαχείριση & σελίδες αποτελεσμάτων εκτός index
     },
     sitemap: `${SITE}/sitemap.xml`,
     host: SITE,

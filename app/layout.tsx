@@ -46,6 +46,19 @@ export default async function RootLayout({
     label: dim.label,
     values: getValuesForDimension(plays, dim),
   }));
+  // Ελαφρύ index για τη ζωντανή αναζήτηση στο navbar.
+  const searchItems = plays.map((p) => ({
+    id: p.id,
+    title: p.title,
+    image: p.image,
+    shortDescription: p.shortDescription,
+    author: p.author,
+    categories: p.categories,
+    season: p.season,
+    grades: p.grades,
+    ageGroups: p.ageGroups,
+    audiences: p.audiences,
+  }));
 
   return (
     <html
@@ -74,7 +87,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         {/* End Google Tag Manager (noscript) */}
-        <Navbar categoryMenu={categoryMenu} />
+        <Navbar categoryMenu={categoryMenu} searchItems={searchItems} />
         {children}
       </body>
     </html>

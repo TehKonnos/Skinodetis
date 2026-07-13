@@ -332,6 +332,59 @@ export const seedPlays: Play[] = [
   },
 ];
 
+/** Πεζοποίηση + αφαίρεση τόνων, ώστε η αναζήτηση να αγνοεί τόνους/κεφαλαία. */
+function normalizeText(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
+}
+
+/** Ελαφρύ αντικείμενο για αναζήτηση/αποτελέσματα (περνά και στον client). */
+export type PlaySearchItem = Pick<
+  Play,
+  | 'id'
+  | 'title'
+  | 'image'
+  | 'shortDescription'
+  | 'author'
+  | 'categories'
+  | 'season'
+  | 'grades'
+  | 'ageGroups'
+  | 'audiences'
+>;
+
+/**
+ * Αναζήτηση έργων: επιστρέφει όσα ταιριάζουν σε ΟΛΟΥΣ τους όρους (AND),
+ * αγνοώντας τόνους και κεφαλαία. Δουλεύει και με πλήρη Play και με το ελαφρύ index.
+ */
+export function searchPlays<T extends PlaySearchItem>(
+  plays: T[],
+  query: string
+): T[] {
+  const q = normalizeText(query.trim());
+  if (!q) return [];
+  const terms = q.split(/\s+/).filter(Boolean);
+  return plays.filter((p) => {
+    const hay = normalizeText(
+      [
+        p.title,
+        p.author,
+        p.shortDescription,
+        p.season,
+        ...(p.categories ?? []),
+        ...(p.grades ?? []),
+        ...(p.ageGroups ?? []),
+        ...(p.audiences ?? []),
+      ]
+        .filter(Boolean)
+        .join(' ')
+    );
+    return terms.every((t) => hay.includes(t));
+  });
+}
+
 export function getPlayById(plays: Play[], id: string): Play | undefined {
   return plays.find((p) => p.id === id);
 }

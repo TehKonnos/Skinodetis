@@ -17,9 +17,20 @@ const notoMono = Noto_Sans_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://skinodetis.gr"),
   title: "Σκηνοδέτης — Παιδικά Θεατρικά Έργα",
   description:
     "Ανακαλύψτε μαγευτικά θεατρικά έργα για παιδιά. Μαγικές ιστορίες που ζωντανεύουν στη σκηνή για νεαρό κοινό.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Σκηνοδέτης — Παιδικά Θεατρικά Έργα",
+    description:
+      "Ανακαλύψτε μαγευτικά θεατρικά έργα για παιδιά, για σχολεία και ερασιτεχνικές ομάδες.",
+    url: "https://skinodetis.gr",
+    siteName: "Σκηνοδέτης",
+    locale: "el_GR",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({

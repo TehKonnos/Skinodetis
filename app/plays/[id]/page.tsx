@@ -53,8 +53,8 @@ export default async function PlayPage({
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/75" />
 
-        {/* Back button */}
-        <div className="absolute top-5 left-5 z-10">
+        {/* Back button — κάτω από το fixed navbar (αλλιώς το navbar κλέβει το κλικ) */}
+        <div className="absolute top-20 left-5 z-30">
           <Link
             href="/"
             className="flex items-center gap-2 bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white font-semibold px-4 py-2 rounded-full transition-all duration-200 border border-white/20 text-sm"

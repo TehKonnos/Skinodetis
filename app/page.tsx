@@ -101,7 +101,7 @@ export default async function HomePage({
               href={`/?category=${encodeURIComponent(cat)}#plays`}
               className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
                 filters.category === cat
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md shadow-purple-200 dark:shadow-purple-900/30'
+                  ? 'bg-coral text-white shadow-md shadow-coral/30'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >

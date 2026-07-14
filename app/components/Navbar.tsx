@@ -23,6 +23,7 @@ export default function Navbar({
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // dropdown Κατηγορίες (desktop)
   const [mobileOpen, setMobileOpen] = useState(false); // burger (mobile)
+  const [mobileCatOpen, setMobileCatOpen] = useState(false); // accordion Κατηγορίες (mobile)
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
@@ -55,6 +56,7 @@ export default function Navbar({
   useEffect(() => {
     setMobileOpen(false);
     setMenuOpen(false);
+    setMobileCatOpen(false);
   }, [pathname]);
 
   // Κλείδωμα scroll όσο είναι ανοιχτό το mobile μενού.
@@ -199,49 +201,76 @@ export default function Navbar({
             />
 
             <nav className="flex flex-col divide-y divide-gray-100 dark:divide-gray-800">
-              {[
-                { href: '/#plays', label: 'Τα Έργα' },
-                { href: '/about', label: 'Ο Συγγραφέας' },
-                { href: '/#contact', label: 'Επικοινωνία' },
-              ].map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="py-3 text-base font-semibold text-gray-800 dark:text-gray-100 hover:text-coral-600 dark:hover:text-coral"
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
+              <Link
+                href="/#plays"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-base font-semibold text-gray-800 dark:text-gray-100 hover:text-coral-600 dark:hover:text-coral"
+              >
+                Τα Έργα
+              </Link>
 
-            {/* Κατηγορίες */}
-            {catValues.length > 0 && (
-              <div className="space-y-5 pt-2 border-t border-gray-100 dark:border-gray-800">
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  Κατηγορίες
-                </p>
-                {catValues.map((dim) => (
-                  <div key={dim.param}>
-                    <p className="text-xs font-bold uppercase tracking-wider text-coral-600 dark:text-coral mb-2">
-                      {dim.label}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {dim.values.map((value) => (
-                        <Link
-                          key={value}
-                          href={`/?${dim.param}=${encodeURIComponent(value)}#plays`}
-                          onClick={() => setMobileOpen(false)}
-                          className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-full hover:bg-gold/20 hover:text-ink dark:hover:text-gold"
-                        >
-                          {value}
-                        </Link>
+              {/* Κατηγορίες — accordion (κλειστό από default) */}
+              {catValues.length > 0 && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setMobileCatOpen((o) => !o)}
+                    aria-expanded={mobileCatOpen}
+                    className="w-full flex items-center justify-between py-3 text-base font-semibold text-gray-800 dark:text-gray-100"
+                  >
+                    Κατηγορίες
+                    <svg
+                      className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+                        mobileCatOpen ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {mobileCatOpen && (
+                    <div className="pb-4 space-y-5">
+                      {catValues.map((dim) => (
+                        <div key={dim.param}>
+                          <p className="text-xs font-bold uppercase tracking-wider text-coral-600 dark:text-coral mb-2">
+                            {dim.label}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {dim.values.map((value) => (
+                              <Link
+                                key={value}
+                                href={`/?${dim.param}=${encodeURIComponent(value)}#plays`}
+                                onClick={() => setMobileOpen(false)}
+                                className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-full hover:bg-gold/20 hover:text-ink dark:hover:text-gold"
+                              >
+                                {value}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+
+              <Link
+                href="/about"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-base font-semibold text-gray-800 dark:text-gray-100 hover:text-coral-600 dark:hover:text-coral"
+              >
+                Ο Συγγραφέας
+              </Link>
+              <Link
+                href="/#contact"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-base font-semibold text-gray-800 dark:text-gray-100 hover:text-coral-600 dark:hover:text-coral"
+              >
+                Επικοινωνία
+              </Link>
+            </nav>
           </div>
         </div>
       )}

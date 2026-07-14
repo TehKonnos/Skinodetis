@@ -70,8 +70,15 @@ export default function Navbar({
   // Το δημόσιο navbar δεν εμφανίζεται στις σελίδες διαχείρισης.
   if (pathname?.startsWith('/admin')) return null;
 
-  // «Στέρεο» φόντο όταν έχει γίνει scroll Ή όταν είναι ανοιχτό το mobile μενού.
-  const solid = scrolled || mobileOpen;
+  // Σελίδες με σκούρο hero πίσω από το navbar (εκεί χωράει το διάφανο/λευκό στιλ).
+  const overHero =
+    pathname === '/' ||
+    pathname === '/about' ||
+    (pathname?.startsWith('/plays/') ?? false);
+
+  // «Στέρεο» φόντο: μετά από scroll, με ανοιχτό mobile μενού, ή σε σελίδες
+  // χωρίς σκούρο hero (π.χ. /search) — αλλιώς το λευκό logo/κείμενο εξαφανίζεται.
+  const solid = scrolled || mobileOpen || !overHero;
 
   const linkColor = solid
     ? 'text-gray-600 dark:text-gray-300 hover:text-coral-600 dark:hover:text-coral'

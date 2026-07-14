@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { readPlays } from '../lib/plays-store';
+import ContactForm from '../components/ContactForm';
+import NewsletterForm from '../components/NewsletterForm';
 
 export const metadata: Metadata = {
   title: 'Ο Συγγραφέας — Παναγιώτης Χρυσίδης | Σκηνοδέτης',
@@ -102,6 +104,47 @@ export default async function AboutPage() {
           </Link>
         </div>
       </main>
+
+      {/* Επικοινωνία */}
+      <section
+        id="contact"
+        className="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/40"
+      >
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">
+              Επικοινωνία
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 text-base">
+              Θέλετε να ανεβάσετε ένα έργο ή έχετε μια ερώτηση; Γράψτε μας.
+            </p>
+          </div>
+          <ContactForm />
+        </div>
+      </section>
+
+      {/* Footer με newsletter */}
+      <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="max-w-sm">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                Newsletter
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Μείνετε ενημερωμένοι για νέα έργα και παραστάσεις.
+              </p>
+            </div>
+            <NewsletterForm />
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-400 dark:text-gray-600">
+            <p>
+              &copy; {new Date().getFullYear()}{' '}Σκηνοδέτης &mdash; Παιδικά Θεατρικά Έργα
+            </p>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

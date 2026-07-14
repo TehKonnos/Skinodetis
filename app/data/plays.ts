@@ -403,6 +403,23 @@ export function getAllCategories(plays: Play[]): string[] {
 }
 
 /** Οι διαθέσιμες τιμές μιας διάστασης, με βάση τα δοσμένα έργα. */
+/**
+ * Λογική σειρά τιμών ανά διάσταση (μικρότερο → μεγαλύτερο). Όσες τιμές δεν
+ * αναφέρονται εδώ μπαίνουν στο τέλος, αλφαβητικά.
+ */
+const VALUE_ORDER: Partial<Record<TaxonomyDimension['param'], string[]>> = {
+  age: [
+    'Προσχολική (3–5)',
+    'Παιδική (6–9)',
+    'Προεφηβική (10–12)',
+    'Έφηβοι (12+)',
+  ],
+  grade: ['Νηπιαγωγείο', 'Δημοτικό', 'Γυμνάσιο', 'Λύκειο'],
+  audience: ['Παιδιά', 'Έφηβοι', 'Ερασιτεχνικές ομάδες'],
+  // Εποχή σε ημερολογιακή σειρά σχολικής χρονιάς.
+  season: ['28η Οκτωβρίου', 'Χριστούγεννα', 'Καρναβάλι', 'Πάσχα', 'Καλοκαίρι'],
+};
+
 export function getValuesForDimension(
   plays: Play[],
   dim: TaxonomyDimension
@@ -411,7 +428,19 @@ export function getValuesForDimension(
     const v = p[dim.field];
     return Array.isArray(v) ? v : [v];
   });
-  return [...new Set(values)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'el'));
+  const uniq = [...new Set(values)].filter(Boolean);
+  const order = VALUE_ORDER[dim.param];
+  if (!order) {
+    return uniq.sort((a, b) => a.localeCompare(b, 'el'));
+  }
+  return uniq.sort((a, b) => {
+    const ia = order.indexOf(a);
+    const ib = order.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b, 'el');
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
 }
 
 /** Ενεργά φίλτρα ανά search param. */

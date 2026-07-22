@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { subscribeNewsletter, type FormState } from '../actions';
+import { pushEvent } from '../lib/gtm';
 
 const initialState: FormState = { ok: false, message: '' };
 
@@ -10,6 +11,11 @@ export default function NewsletterForm() {
     subscribeNewsletter,
     initialState
   );
+
+  // Key event: επιτυχής εγγραφή στο newsletter.
+  useEffect(() => {
+    if (state.ok) pushEvent('newsletter_signup');
+  }, [state]);
 
   return (
     <div className="w-full max-w-md">

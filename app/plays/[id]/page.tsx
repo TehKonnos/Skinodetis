@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { getPlayById, getRelatedPlays } from '../../data/plays';
 import { readPlays } from '../../lib/plays-store';
 import RelatedPlays from '../../components/RelatedPlays';
+import PdfButtons from './PdfButtons';
 
 // Τα έργα είναι επεξεργάσιμα κατά το runtime.
 export const dynamic = 'force-dynamic';
@@ -269,49 +270,12 @@ export default async function PlayPage({
 
               <div className="mt-6 pt-5 border-t border-black/10 dark:border-white/10 flex flex-col gap-3">
                 {play.pdfUrl && (
-                  <a
-                    href={play.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full bg-gold hover:bg-gold-600 text-ink font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm hover:shadow-md"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                    Άνοιγμα PDF
-                  </a>
-                )}
-                {play.pdfUrl && (
-                  <a
-                    href={play.pdfUrl}
-                    download={`${play.title} - ${play.author} - Σκηνοδέτης.pdf`}
-                    className="flex items-center justify-center gap-2 w-full border border-gold/50 text-ink dark:text-cream hover:bg-gold/10 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 text-sm"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    Κατέβασμα PDF
-                  </a>
+                  <PdfButtons
+                    pdfUrl={play.pdfUrl}
+                    playId={play.id}
+                    title={play.title}
+                    author={play.author}
+                  />
                 )}
                 <Link
                   href="/"

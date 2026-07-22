@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { submitContact, type FormState } from '../actions';
+import { pushEvent } from '../lib/gtm';
 
 const initialState: FormState = { ok: false, message: '' };
 
@@ -10,6 +11,11 @@ export default function ContactForm() {
     submitContact,
     initialState
   );
+
+  // Key event: επιτυχής υποβολή φόρμας επικοινωνίας.
+  useEffect(() => {
+    if (state.ok) pushEvent('contact_submit');
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-4">
